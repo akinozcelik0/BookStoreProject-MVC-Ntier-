@@ -1,23 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 using RaidBookStore.DataAccess;
+using RaidBookStore.DataAccess.Repository.IRepository;
 using RaidBookStore.Models;
 
-namespace RaidBookStore.Controllers
+namespace RaidBookStore.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class CategoryController : Controller
     {
-        private readonly ApplicationDbContext _db;
-        public CategoryController(ApplicationDbContext db)
+        //private readonly ApplicationDbContext _db;
+
+        private readonly IUnitOfWork _unitOfWork;
+
+        public CategoryController(IUnitOfWork unitOfWork)
         {
-            _db = db;
+            _unitOfWork = unitOfWork;
         }
 
 
 
         public IActionResult Index()
         {
-            IEnumerable<Category> objCategoryList = _db.Categories;
+            IEnumerable<Category> objCategoryList = _unitOfWork.Category.GetAll();
             return View(objCategoryList);
         }
 
@@ -40,8 +45,8 @@ namespace RaidBookStore.Controllers
             }
             if (ModelState.IsValid)
             {
-                _db.Categories.Add(category);
-                _db.SaveChanges();
+                _unitOfWork.Category.Add(category);
+                _unitOfWork.Save();
                 TempData["Success"] = "Category created successfully!";
                 return RedirectToAction("Index");
 
@@ -58,17 +63,17 @@ namespace RaidBookStore.Controllers
                 return NotFound();
             }
 
-            var categoryFind = _db.Categories.Find(id);
+            //var categoryFind = _db.Categories.Find(id);
 
-            //var categoryFirst = _db.Categories.FirstOrDefault(c => c.Id == id);
+            var categoryFirst = _unitOfWork.Category.GetFirstOrDefault(c => c.Id == id);
             //var categorySingle = _db.Categories.SingleOrDefault(c => c.Id == id);
 
-            if (categoryFind == null)
+            if (categoryFirst == null)
             {
                 return NotFound();
             }
 
-            return View(categoryFind);
+            return View(categoryFirst);
         }
 
         //POST
@@ -83,8 +88,8 @@ namespace RaidBookStore.Controllers
             }
             if (ModelState.IsValid)
             {
-                _db.Categories.Update(category);
-                _db.SaveChanges();
+                _unitOfWork.Category.Update(category);
+                _unitOfWork.Save();
                 TempData["Success"] = "Category updated successfully!";
                 return RedirectToAction("Index");
 
@@ -102,17 +107,17 @@ namespace RaidBookStore.Controllers
                 return NotFound();
             }
 
-            var categoryFind = _db.Categories.Find(id);
+            //var categoryFind = _db.Categories.Find(id);
 
-            //var categoryFirst = _db.Categories.FirstOrDefault(c => c.Id == id);
+            var categoryFirst = _unitOfWork.Category.GetFirstOrDefault(c => c.Id == id);
             //var categorySingle = _db.Categories.SingleOrDefault(c => c.Id == id);
 
-            if (categoryFind == null)
+            if (categoryFirst == null)
             {
                 return NotFound();
             }
 
-            return View(categoryFind);
+            return View(categoryFirst);
         }
 
         //POST
@@ -120,14 +125,14 @@ namespace RaidBookStore.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeletePOST(int? id)
         {
-            var category = _db.Categories.Find(id);
+            var category = _unitOfWork.Category.GetFirstOrDefault(c => c.Id == id);
             if (category == null)
             {
                 return NotFound();
             }
-            
-            _db.Categories.Remove(category);
-            _db.SaveChanges();
+
+            _unitOfWork.Category.Remove(category);
+            _unitOfWork.Save();
             TempData["Success"] = "Category deleted successfully!";
             return RedirectToAction("Index");
 
