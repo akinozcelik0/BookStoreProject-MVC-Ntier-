@@ -6,9 +6,8 @@
       "library": "bootswatch@5.2.3",
       "destination": "wwwroot/lib/bootswatch/",
       "files": [
-        "cerulean/bootstrap.min.css",
-        "superhero/bootstrap.css",
-        "superhero/bootstrap.min.css"
+        "solar/bootstrap.css",
+        "solar/bootstrap.min.css"
       ]
     }
   ]

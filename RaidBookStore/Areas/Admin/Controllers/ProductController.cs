@@ -14,18 +14,20 @@ namespace RaidBookStore.Areas.Admin.Controllers
         //private readonly ApplicationDbContext _db;
 
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public ProductController(IUnitOfWork unitOfWork)
+        public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment hostEnvironment)
         {
             _unitOfWork = unitOfWork;
+            _hostEnvironment = hostEnvironment;
         }
 
 
 
         public IActionResult Index()
         {
-            IEnumerable<CoverType> objCoverTypeList = _unitOfWork.CoverType.GetAll();
-            return View(objCoverTypeList);
+            //IEnumerable<CoverType> objCoverTypeList = _unitOfWork.CoverType.GetAll();
+            return View();
         }
 
         
@@ -57,12 +59,10 @@ namespace RaidBookStore.Areas.Admin.Controllers
             }
             else
             {
+                productViewModel.Product = _unitOfWork.Product.GetFirstOrDefault(u => u.Id == id);
+                return View(productViewModel);
                 //Update Product
             }
-
-            
-
-            return View(productViewModel);
         }
 
         //POST
@@ -73,9 +73,39 @@ namespace RaidBookStore.Areas.Admin.Controllers
             
             if (ModelState.IsValid)
             {
-                //_unitOfWork.CoverType.Update(coverType);
+                string wwwRootPath = _hostEnvironment.WebRootPath;
+                if(file != null)
+                {
+                    string fileName = Guid.NewGuid().ToString();
+                    var uploads = Path.Combine(wwwRootPath, @"images\products");
+                    var extension = Path.GetExtension(file.FileName);
+
+                    if (objProduct.Product.ImageUrl != null)
+                    {
+                        var oldImagePath = Path.Combine(wwwRootPath, objProduct.Product.ImageUrl.TrimStart('\\'));
+                        if(System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                    }
+
+                    using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
+                    {
+                        file.CopyTo(fileStreams);
+                    }
+                    objProduct.Product.ImageUrl = @"\images\products\" + fileName + extension;
+                }
+
+                if(objProduct.Product.Id == 0)
+                {
+                    _unitOfWork.Product.Add(objProduct.Product);
+                }
+                else
+                {
+                    _unitOfWork.Product.Update(objProduct.Product);
+                }
                 _unitOfWork.Save();
-                TempData["Success"] = "Cover Type updated successfully!";
+                TempData["Success"] = "Product created successfully!";
                 return RedirectToAction("Index");
 
             }
@@ -83,48 +113,55 @@ namespace RaidBookStore.Areas.Admin.Controllers
         }
 
 
-        //DELETE ------------------------------
-        //GET
-        public IActionResult Delete(int? id)
+        ////DELETE ------------------------------
+        ////GET
+        //public IActionResult Delete(int? id)
+        //{
+        //    if (id == null || id == 0)
+        //    {
+        //        return NotFound();
+        //    }
+
+            
+
+        //    var coverTypeFirst = _unitOfWork.CoverType.GetFirstOrDefault(c => c.Id == id);
+            
+
+        //    if (coverTypeFirst == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return View(coverTypeFirst);
+        //}
+
+        
+        #region API CALLS
+        [HttpGet]
+        public IActionResult GetAll()
         {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
-
-            
-
-            var coverTypeFirst = _unitOfWork.CoverType.GetFirstOrDefault(c => c.Id == id);
-            
-
-            if (coverTypeFirst == null)
-            {
-                return NotFound();
-            }
-
-            return View(coverTypeFirst);
+            var productList = _unitOfWork.Product.GetAll(includeProperties:"Category,CoverType");
+            return Json(new { data = productList });
         }
 
         //POST
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeletePOST(int? id)
+        [HttpDelete]
+        public IActionResult Delete(int? id)
         {
-            var coverType = _unitOfWork.CoverType.GetFirstOrDefault(c => c.Id == id);
-            if (coverType == null)
+            var objProduct = _unitOfWork.Product.GetFirstOrDefault(c => c.Id == id);
+            if (objProduct == null)
             {
-                return NotFound();
+                return Json(new { success = false, message = "Error while Deleting!" });
             }
-
-            _unitOfWork.CoverType.Remove(coverType);
+            var oldImagePath = Path.Combine(_hostEnvironment.WebRootPath, objProduct.ImageUrl.TrimStart('\\'));
+            if (System.IO.File.Exists(oldImagePath))
+            {
+                System.IO.File.Delete(oldImagePath);
+            }
+            _unitOfWork.Product.Remove(objProduct);
             _unitOfWork.Save();
-            TempData["Success"] = "Cover Type deleted successfully!";
-            return RedirectToAction("Index");
-
+            return Json(new { success = true, message = "Deleted Successfully!" });
         }
-
-
-
-
+        #endregion
     }
 }
