@@ -10,11 +10,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaidBookStore.DataAccess", "RaidBookStore.DataAccess\RaidBookStore.DataAccess.csproj", "{94AC221C-EF59-4809-82FC-9C7DD9170626}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RaidBookStore.DataAccess", "RaidBookStore.DataAccess\RaidBookStore.DataAccess.csproj", "{94AC221C-EF59-4809-82FC-9C7DD9170626}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaidBookStore.Models", "RaidBookStore.Models\RaidBookStore.Models.csproj", "{783D8333-A048-47C5-AD24-0A43FDD848B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RaidBookStore.Models", "RaidBookStore.Models\RaidBookStore.Models.csproj", "{783D8333-A048-47C5-AD24-0A43FDD848B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaidBookStore.Utility", "RaidBookStore.Utility\RaidBookStore.Utility.csproj", "{E90B7321-377A-4EFF-B52A-6B7C6C0522B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RaidBookStore.Utility", "RaidBookStore.Utility\RaidBookStore.Utility.csproj", "{E90B7321-377A-4EFF-B52A-6B7C6C0522B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

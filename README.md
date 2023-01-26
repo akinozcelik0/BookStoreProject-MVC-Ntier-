@@ -1,11 +1,10 @@
 # Raid Book Store (MVC Project)
 * A Book Store Project with CRUD operations
 * Project uses N-tier Architecture and Repository Pattern 
-* Going to be updated and designed soon..
+* Identity and User Roles added.
 
 
-
-
+![Book Store Main](RaidBookStore/wwwroot/images/assets/bookStoreMain.png)
 
 ## Resources
 * https://bootswatch.com/

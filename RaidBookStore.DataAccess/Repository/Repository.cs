@@ -3,6 +3,7 @@ using RaidBookStore.DataAccess.Repository.IRepository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,6 +17,7 @@ namespace RaidBookStore.DataAccess.Repository
         {
             _db = db;
             //_db.Products.Include(u => u.Category).Include( u => u.CoverType);
+            //_db.ShoppingCarts.Include(u => u.Product).Include(u => u.ProductId);
             this.dbSet = _db.Set<T>();
         }
 
@@ -25,10 +27,14 @@ namespace RaidBookStore.DataAccess.Repository
         }
 
         //Include Properties -> "Category, Covertype...."
-        public IEnumerable<T> GetAll(string? includeProperties = null)
+        public IEnumerable<T> GetAll(Expression<Func<T,bool>> filter=null,string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
-            if(includeProperties != null)
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+            if (includeProperties != null)
             {
                 foreach (var includeProp in includeProperties.Split(new char[] {','},StringSplitOptions.RemoveEmptyEntries))
                 {
