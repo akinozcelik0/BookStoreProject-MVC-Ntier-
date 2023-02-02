@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using RaidBookStore.Models;
 
 namespace RaidBookStore.DataAccess;
@@ -22,6 +23,12 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<Company> Companies { get; set; }
 
     public DbSet <ShoppingCart> ShoppingCarts { get; set; }
+
+    public DbSet<OrderHeader> OrderHeaders { get; set; }
+
+    public DbSet<OrderDetail> OrderDetails { get; set; }
+
+
 
 
 }

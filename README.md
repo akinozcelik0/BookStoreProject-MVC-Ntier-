@@ -12,6 +12,7 @@
 * https://fontawesome.com/
 * https://github.com/CodeSeven/toastr
 * https://sweetalert2.github.io/#examples
+* https://stripe.com/
 
 
 
