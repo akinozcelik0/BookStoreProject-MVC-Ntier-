@@ -1,14 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.FileProviders;
 using RaidBookStore.DataAccess;
 using RaidBookStore.DataAccess.Repository.IRepository;
 using RaidBookStore.Models;
 using RaidBookStore.Models.ViewModels;
+using RaidBookStore.Utility;
 
 namespace RaidBookStore.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = StaticDetails.Role_Admin)]
+
     public class ProductController : Controller
     {
         //private readonly ApplicationDbContext _db;
