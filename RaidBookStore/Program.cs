@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using RaidBookStore.DataAccess;
+using RaidBookStore.DataAccess.DbInitializer;
 using RaidBookStore.DataAccess.Repository;
 using RaidBookStore.DataAccess.Repository.IRepository;
 using RaidBookStore.Utility;
@@ -22,8 +23,8 @@ builder.Services
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.ConfigureApplicationCookie(option =>
@@ -32,7 +33,13 @@ builder.Services.ConfigureApplicationCookie(option =>
     option.LogoutPath = $"/Identity/Account/Logout";
     option.AccessDeniedPath = $"/Identity/Account/AccessDenied";
 });
-
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(100);
+    options.Cookie.HttpOnly= true;
+    options.Cookie.IsEssential= true;
+});
 
 var app = builder.Build();
 
@@ -50,9 +57,11 @@ app.UseStaticFiles();
 app.UseRouting();
 StripeConfiguration.ApiKey = builder.Configuration.GetSection("StripeSettings:SecretKey").Get<string>();
 
+SeedDatabase();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseSession();
 
 app.MapRazorPages();
 
@@ -62,3 +71,12 @@ app.MapControllerRoute(
 
 
 app.Run();
+
+void SeedDatabase()
+{
+    using(var scope = app.Services.CreateScope())
+    {
+        var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();  
+        dbInitializer.Initialize();
+    }
+}

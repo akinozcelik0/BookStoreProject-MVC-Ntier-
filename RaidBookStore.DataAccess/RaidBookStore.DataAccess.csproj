@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RaidBookStore.Models\RaidBookStore.Models.csproj" />
+    <ProjectReference Include="..\RaidBookStore.Utility\RaidBookStore.Utility.csproj" />
   </ItemGroup>
 
 </Project>

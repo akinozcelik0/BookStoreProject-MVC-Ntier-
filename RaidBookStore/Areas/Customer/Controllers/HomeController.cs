@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RaidBookStore.DataAccess.Repository.IRepository;
 using RaidBookStore.Models;
+using RaidBookStore.Utility;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
@@ -51,14 +52,19 @@ namespace RaidBookStore.Areas.Customer.Controllers
             if (cartFromDb == null)
             {
                 _unitOfWork.ShoppingCart.Add(shoppingCart);
+                _unitOfWork.Save();
+                HttpContext.Session
+                    .SetInt32(StaticDetails.SessionCart, _unitOfWork.ShoppingCart
+                    .GetAll(u => u.ApplicationUserId == claim.Value).ToList().Count);
             }
             else
             {
                 _unitOfWork.ShoppingCart.IncrementCount(cartFromDb, shoppingCart.Count);
+                _unitOfWork.Save();
             }
           
             
-            _unitOfWork.Save();
+            
             return RedirectToAction(nameof(Index));
         }
 
